@@ -1,0 +1,7 @@
+dist/
+plugins/
+mt-static/
+playwright-report/
+test-results/
+node_modules/
+*.zip
