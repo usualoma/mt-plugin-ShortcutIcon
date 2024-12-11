@@ -1,7 +1,7 @@
 {
   "name": "ShortcutIcon",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "タブに表示されるアイコンを設定します。（ブラウザに保存されます）",
   "scripts": {
