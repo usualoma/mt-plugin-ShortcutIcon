@@ -6,7 +6,7 @@ if (sessionStorage.getItem(HAS_SHORTCUT_ICON_KEY)) {
   defaultIcon?.remove();
 }
 
-let showResetButton = () => {};
+let showResetButton = (blobUrl: string) => {};
 
 const setShortcutIcon = () => {
   const request = indexedDB.open(DB_NAME, 1);
@@ -43,7 +43,6 @@ const setShortcutIcon = () => {
 
         defaultIcon?.remove();
         sessionStorage.setItem(HAS_SHORTCUT_ICON_KEY, "true");
-        showResetButton();
 
         const blob = new Blob([ab], { type: mimeType });
         const blobUrl = URL.createObjectURL(blob);
@@ -53,6 +52,7 @@ const setShortcutIcon = () => {
           document.createElement("link");
         linkElement.setAttribute("rel", "shortcut icon");
         linkElement.setAttribute("href", blobUrl);
+        showResetButton(blobUrl);
 
         if (!document.querySelector('link[rel="shortcut icon"]')) {
           document.head.appendChild(linkElement);
@@ -134,17 +134,34 @@ if (document.querySelector("html")?.dataset.screenId === "list-plugins") {
         marker?.nextSibling || null
       );
 
-      showResetButton = () => {
-        document.querySelector(".mt-plugin-reset-button")?.remove();
+      showResetButton = (blobUrl: string) => {
+        document
+          .querySelectorAll(
+            ".mt-plugin-reset-button, .mt-plugin-reset-button-img"
+          )
+          ?.forEach((el) => el.remove());
 
         const button = document.createElement("button");
         button.type = "button";
-        button.classList.add("btn", "btn-default", "ml-2", "mt-plugin-reset-button");
+        button.classList.add(
+          "btn",
+          "btn-default",
+          "ml-2",
+          "mt-plugin-reset-button"
+        );
         button.textContent = "アイコンをリセット";
         marker?.parentElement?.insertBefore(
           button,
           setIconButton.nextSibling || null
         );
+
+        const img = document.createElement("img");
+        img.style.width = "128px";
+        img.style.display = "block";
+        img.classList.add("mt-plugin-reset-button-img");
+        img.src = blobUrl;
+        marker?.parentElement?.insertBefore(img, button);
+
         button.addEventListener("click", () => {
           indexedDB.deleteDatabase(DB_NAME);
           sessionStorage.removeItem(HAS_SHORTCUT_ICON_KEY);
@@ -153,6 +170,7 @@ if (document.querySelector("html")?.dataset.screenId === "list-plugins") {
             document.head.appendChild(defaultIcon);
           }
           button.remove();
+          img.remove();
         });
       };
     }
